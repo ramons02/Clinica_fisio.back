@@ -2,13 +2,13 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClinicaService } from '../services/clinica.service';
-
+s
 @Component({
   selector: 'app-financeiro',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './financeiro.component.html',
-  styleUrls: ['./financeiro.component.css']
+  styleUrls: ['./financeiro.component.scss']
 })
 export class FinanceiroComponent implements OnInit, OnChanges {
 
