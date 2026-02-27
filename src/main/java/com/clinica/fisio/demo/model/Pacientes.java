@@ -30,15 +30,6 @@ public class Pacientes {
     @Column(name = "historico_lesao", columnDefinition = "TEXT")
     private String historicoLesao;
 
-    @Column(columnDefinition = "TEXT")
-    private String medicamentos;
-
-    @Column(name = "queixa_principal", columnDefinition = "TEXT")
-    private String queixaPrincipal;
-
-    @Column(name = "observacoes_gerais", columnDefinition = "TEXT")
-    private String observacoesGerais;
-
     // Coluna para o caminho do arquivo de exame
     private String exameUrl;
 

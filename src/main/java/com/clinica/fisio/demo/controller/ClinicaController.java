@@ -28,7 +28,7 @@ public class ClinicaController {
     @Autowired
     private UsuarioRepository userRepo;
     @Autowired
-    private PacienteRepository pacRepo;
+    private PacienteRepository pacienteRepository;
     @Autowired
     private AgendaRepository agendaRepo;
 
@@ -38,7 +38,7 @@ public class ClinicaController {
     // PACIENTES
     @GetMapping("/pacientes")
     public List<Pacientes> listarPacientes() {
-        return pacRepo.findAll();
+        return pacienteRepository.findAll();
     }
 
 
@@ -56,7 +56,7 @@ public class ClinicaController {
             Pacientes pacienteParaSalvar;
 
             if (pacienteEntrada.getId() != null) {
-                pacienteParaSalvar = pacRepo.findById(pacienteEntrada.getId())
+                pacienteParaSalvar = pacienteRepository.findById(pacienteEntrada.getId())
                         .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
 
                 // --- LÓGICA DE PROTEÇÃO PARA TODOS OS CAMPOS ---
@@ -87,21 +87,15 @@ public class ClinicaController {
                 if (pacienteEntrada.getCondicao() != null && !pacienteEntrada.getCondicao().isEmpty()) {
                     pacienteParaSalvar.setCondicao(pacienteEntrada.getCondicao());
                 }
-                if (pacienteEntrada.getQueixaPrincipal() != null && !pacienteEntrada.getQueixaPrincipal().isEmpty()) {
-                    pacienteParaSalvar.setQueixaPrincipal(pacienteEntrada.getQueixaPrincipal());
-                }
+
                 if (pacienteEntrada.getHistoricoLesao() != null && !pacienteEntrada.getHistoricoLesao().isEmpty()) {
                     pacienteParaSalvar.setHistoricoLesao(pacienteEntrada.getHistoricoLesao());
                 }
-                if (pacienteEntrada.getMedicamentos() != null && !pacienteEntrada.getMedicamentos().isEmpty()) {
-                    pacienteParaSalvar.setMedicamentos(pacienteEntrada.getMedicamentos());
-                }
+
                 if (pacienteEntrada.getObjetivos() != null && !pacienteEntrada.getObjetivos().isEmpty()) {
                     pacienteParaSalvar.setObjetivos(pacienteEntrada.getObjetivos());
                 }
-                if (pacienteEntrada.getObservacoesGerais() != null && !pacienteEntrada.getObservacoesGerais().isEmpty()) {
-                    pacienteParaSalvar.setObservacoesGerais(pacienteEntrada.getObservacoesGerais());
-                }
+
 
                 // Financeiro
                 if (pacienteEntrada.getPlano() != null && !pacienteEntrada.getPlano().isEmpty()) {
@@ -130,7 +124,7 @@ public class ClinicaController {
                 pacienteParaSalvar.setExameUrl(nomeArquivo);
             }
 
-            pacRepo.save(pacienteParaSalvar);
+            pacienteRepository.save(pacienteParaSalvar);
             return ResponseEntity.ok(Map.of("success", true, "message", "Dados preservados e atualizados!"));
 
         } catch (Exception e) {
@@ -139,24 +133,29 @@ public class ClinicaController {
     }
 
     // REMOVER PACIENTE
-    @DeleteMapping("/pacientes/{id}")
-    public ResponseEntity<?> excluirPaciente(@PathVariable Long id) {
-        return pacRepo.findById(id).map(p -> {
-            pacRepo.delete(p);
+    // Dentro do seu ClinicaController.java
+
+    @DeleteMapping("/pacientes/{id}") // O caminho será /api/clinica/pacientes/ID
+    public ResponseEntity<Void> deletarPaciente(@PathVariable Long id) {
+        try {
+            // Supondo que seu repository de pacientes esteja injetado aqui
+            pacienteRepository.deleteById(id);
             return ResponseEntity.ok().build();
-        }).orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(404).build();
+        }
     }
     // Ajuste o caminho para bater com o que o Angular envia
     @PutMapping("/pacientes/{id}")
     public ResponseEntity<Pacientes> atualizar(@PathVariable Long id, @RequestBody Pacientes paciente) {
-        return pacRepo.findById(id).map(p -> {
+        return pacienteRepository.findById(id).map(p -> {
             // Atualiza apenas os campos que vieram do formulário
             p.setNome(paciente.getNome());
             p.setTelefone(paciente.getTelefone());
             p.setCondicao(paciente.getCondicao());
             // Se quiser editar mais campos, adicione aqui: p.setPeso(paciente.getPeso());
 
-            Pacientes atualizado = pacRepo.save(p);
+            Pacientes atualizado = pacienteRepository.save(p);
             return ResponseEntity.ok(atualizado);
         }).orElse(ResponseEntity.notFound().build());
     }

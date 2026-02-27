@@ -9,22 +9,25 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/avaliacoes")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AvaliacaoController {
 
-    private final AvaliacaoRepository repository;
-
-    public AvaliacaoController(AvaliacaoRepository repository) {
-        this.repository = repository;
-    }
+    @Autowired
+    private AvaliacaoRepository repository;
 
     @PostMapping
     public Avaliacao salvar(@RequestBody Avaliacao avaliacao) {
+        // Agora pegamos o ID de dentro do objeto paciente
+        if (avaliacao.getPaciente() != null) {
+            System.out.println("Salvando avaliação do paciente ID: " + avaliacao.getPaciente().getId());
+        }
+        // FALTAVA ESSA LINHA ABAIXO:
         return repository.save(avaliacao);
     }
 
-    @GetMapping
-    public List<Avaliacao> listar() {
-        return repository.findAll();
+    @GetMapping("/paciente/{pacienteId}")
+    public List<Avaliacao> buscarPorPaciente(@PathVariable Long pacienteId) {
+        // Busca as avaliações filtrando pelo ID do objeto paciente
+        return repository.findByPacienteId(pacienteId);
     }
 }
