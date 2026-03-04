@@ -10,9 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/agenda")
-// IMPORTANTE: Liberar o DELETE aqui também!
+// ADICIONADO: RequestMethod.PUT na lista de métodos permitidos
 @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", methods = {
-        RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS
+        RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.OPTIONS
 })
 public class AgendaController {
 
@@ -27,6 +27,19 @@ public class AgendaController {
     @PostMapping
     public Agenda salvar(@RequestBody Agenda agenda) {
         return repository.save(agenda);
+    }
+
+    // NOVO MÉTODO: Para finalizar a sessão (Atualizar o status)
+    @PutMapping("/{id}")
+    public ResponseEntity<Agenda> atualizar(@PathVariable Long id, @RequestBody Agenda agendaAtualizada) {
+        return repository.findById(id).map(agenda -> {
+            // Atualiza apenas o status vindo do front-end
+            agenda.setStatus(agendaAtualizada.getStatus());
+
+            // Salva e retorna o objeto atualizado
+            Agenda salvo = repository.save(agenda);
+            return ResponseEntity.ok(salvo);
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     // MÉTODO PARA DESMARCAR (DELETAR)

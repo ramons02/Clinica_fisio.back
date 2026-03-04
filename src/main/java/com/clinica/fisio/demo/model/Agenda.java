@@ -12,7 +12,8 @@ public class Agenda {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime start; // Nomeado como 'start' para o FullCalendar
-    private String title;         // Nomeado como 'title' para o FullCalendar
+    private String title;
+    private String status;// Nomeado como 'title' para o FullCalendar
 
     @ManyToOne
     @JoinColumn(name = "paciente_id")
