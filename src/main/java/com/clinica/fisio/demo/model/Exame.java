@@ -27,5 +27,5 @@ public class Exame {
 
     @ManyToOne
     @JoinColumn(name = "paciente_id")
-    private Pacientes paciente;  // Relaciona o exame ao dono (Paciente)
+    private Paciente paciente;  // Relaciona o exame ao dono (Paciente)
 }

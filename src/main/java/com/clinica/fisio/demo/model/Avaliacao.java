@@ -15,7 +15,7 @@ public class Avaliacao {
 
     @ManyToOne(fetch = FetchType.EAGER) // Garante que traga os dados do paciente
     @JoinColumn(name = "paciente_id", nullable = false)
-    private Pacientes paciente;
+    private Paciente paciente;
 
     @Column(name = "data_avaliacao")
     private LocalDate dataAvaliacao;

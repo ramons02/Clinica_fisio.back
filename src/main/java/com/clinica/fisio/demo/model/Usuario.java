@@ -11,10 +11,10 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuario")
 @Getter
 @Setter
-public class Usuarios implements UserDetails { // Adicionamos o UserDetails aqui
+public class Usuario implements UserDetails { // Adicionamos o UserDetails aqui
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

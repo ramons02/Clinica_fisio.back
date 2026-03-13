@@ -9,8 +9,8 @@ import java.time.temporal.ChronoUnit;
 
 @Entity
 @Data
-@Table(name = "pacientes")
-public class Pacientes {
+@Table(name = "paciente")
+public class Paciente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
