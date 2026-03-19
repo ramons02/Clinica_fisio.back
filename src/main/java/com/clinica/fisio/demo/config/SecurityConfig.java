@@ -11,6 +11,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -20,17 +23,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                // CONFIGURAÇÃO DE CORS COMPLETA AQUI
                 .cors(cors -> cors.configurationSource(request -> {
-                    var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:4200")); // Seu Angular
-                    corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfiguration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type"));
-                    corsConfiguration.setExposedHeaders(java.util.List.of("Content-Disposition")); // Essencial para download
+                    var corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
+                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    corsConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                    corsConfiguration.setExposedHeaders(List.of("Content-Disposition"));
                     return corsConfiguration;
                 }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // LIBERAÇÃO DAS IMAGENS PARA O PDF
+                        .requestMatchers("/images/**").permitAll()
+
+                        // SUAS LIBERAÇÕES EXISTENTES
                         .requestMatchers(HttpMethod.POST, "/api/usuarios/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios/cadastrar").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/usuarios").permitAll()
@@ -40,10 +46,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/evolucoes/**").permitAll()
                         .requestMatchers("/api/avaliacoes/**").permitAll()
                         .requestMatchers("/api/configuracoes/**").permitAll()
-                        // Liberando o download
                         .requestMatchers(HttpMethod.GET, "/api/exames/download/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permite os "pré-testes" do navegador
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/exames/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .build();

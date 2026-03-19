@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style type="text/css">
+        /*<![CDATA[*/
+        @page {
+            size: A4;
+            margin: 15mm 20mm 15mm 20mm;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #2c3e50;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Container principal para o PDF */
+        .report-container {
+            position: relative;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        /* Header elegante com fundo colorido */
+        .top-header {
+            text-align: center;
+            padding: 25px 0;
+            background-color: #0b3d91;
+            color: #ffffff;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 25px;
+        }
+
+        .titulo { 
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* Cartão de Informações do Paciente */
+        .info-paciente {
+            background-color: #f8fafd;
+            border-left: 6px solid #0b3d91;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-paciente p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .info-paciente strong {
+            color: #0b3d91;
+            margin-right: 8px;
+        }
+
+        /* Seção da Tabela */
+        h3.section-title {
+            color: #0b3d91;
+            border-bottom: 2px solid #e0e6ed;
+            padding-bottom: 8px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0;
+            margin-bottom: 30px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th { 
+            background-color: #0b3d91; 
+            color: #ffffff; 
+            padding: 12px 15px; 
+            text-align: left; 
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        td { 
+            padding: 12px 15px; 
+            border-bottom: 1px solid #e0e6ed;
+            color: #34495e;
+        }
+        
+        tr:nth-child(even) td {
+            background-color: #f4f7f6;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Destaque do LSI */
+        .lsi-cell {
+            font-weight: bold;
+            color: #0b3d91;
+        }
+
+        /* Parecer do Fisioterapeuta */
+        .parecer-box {
+            background-color: #ffffff;
+            border: 2px dashed #bdc3c7;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .parecer-title {
+            display: block;
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .aprovado { 
+            color: #27ae60; 
+            font-weight: 800; 
+            font-size: 18px;
+            background-color: #eafaf1;
+            padding: 8px 15px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .reabilitacao { 
+            color: #c0392b; 
+            font-weight: 800; 
+            font-size: 18px;
+            background-color: #fdedec;
+            padding: 8px 15px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+            text-align: center;
+            color: #95a5a6;
+            border-top: 1px solid #e0e6ed;
+            padding-top: 15px;
+        }
+        /*]]>*/
+    </style>
+</head>
+<body>
+
+<div class="report-container">
+    
+    <!-- Cabeçalho -->
+    <div class="top-header">
+        <h2 class="titulo">Relatório de Performance RTS</h2>
+    </div>
+
+    <!-- Informações do Paciente -->
+    <div class="info-paciente">
+        <p><strong>Paciente:</strong> <span th:text="${avaliacao.paciente.nome}"></span></p>
+        <p><strong>Data da Avaliação:</strong> <span th:text="${#temporals.format(avaliacao.dataAvaliacao, 'dd/MM/yyyy')}"></span></p>
+        <p><strong>Histórico / Lesão:</strong> <span th:text="${avaliacao.paciente.historicoLesao != null && !avaliacao.paciente.historicoLesao.empty ? avaliacao.paciente.historicoLesao : 'Não preenchido'}"></span></p>
+    </div>
+
+    <!-- Tabela de Resultados -->
+    <h3 class="section-title">Resultados de Simetria Funcional (LSI)</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Teste Realizado</th>
+            <th>Membro Direito</th>
+            <th>Membro Esquerdo</th>
+            <th>Índice LSI (%)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Dinamometria Extensora</td>
+            <td th:text="${avaliacao.extDir}"></td>
+            <td th:text="${avaliacao.extEsq}"></td>
+            <td class="lsi-cell" th:text="${lsiExt + '%'}"></td>
+        </tr>
+        <tr>
+            <td>Dinamometria Flexora</td>
+            <td th:text="${avaliacao.flexDir}"></td>
+            <td th:text="${avaliacao.flexEsq}"></td>
+            <td class="lsi-cell" th:text="${lsiFlex + '%'}"></td>
+        </tr>
+        <tr>
+            <td>Single Hop Test</td>
+            <td th:text="${avaliacao.singleDir}"></td>
+            <td th:text="${avaliacao.singleEsq}"></td>
+            <td class="lsi-cell" th:text="${lsiSingle + '%'}"></td>
+        </tr>
+        <tr>
+            <td>Triple Hop Test</td>
+            <td th:text="${avaliacao.tripleDir}"></td>
+            <td th:text="${avaliacao.tripleEsq}"></td>
+            <td class="lsi-cell" th:with="lsiTriple=${(avaliacao.tripleEsq > 0) ? (avaliacao.tripleDir / avaliacao.tripleEsq * 100) : 0}"
+                th:text="${#numbers.formatDecimal(lsiTriple, 1, 1) + '%'}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Parecer Final -->
+    <div class="parecer-box">
+        <strong class="parecer-title">Parecer Clínico Fisioterapêutico</strong>
+        <span th:with="lsiCalculado=${(avaliacao.extEsq > 0) ? (avaliacao.extDir / avaliacao.extEsq * 100) : 0}"
+              th:class="${lsiCalculado >= 90} ? 'aprovado' : 'reabilitacao'"
+              th:text="${lsiCalculado >= 90} ? '✔ APROVADO PARA RETORNO AO ESPORTE' : '⚠ MANTER REABILITAÇÃO'">
+        </span>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="footer">
+        FisioPower - Clínica de Reabilitação Desportiva
+    </div>
+
+</div> <!-- fim do wrapper -->
+
+</body>
+</html>
