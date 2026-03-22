@@ -26,12 +26,12 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
         // 1. Libera caminhos públicos e Preflight (CORS)
         String path = request.getServletPath();
         if (path.equals("/api/auth/login") || path.equals("/api/auth/cadastrar") ||
+                path.startsWith("/api/ia/") ||
                 request.getMethod().equalsIgnoreCase("OPTIONS")) {
             filterChain.doFilter(request, response);
             return;
@@ -53,8 +53,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                     var authentication = new UsernamePasswordAuthenticationToken(
                             usuario,
                             null,
-                            usuario.getAuthorities()
-                    );
+                            usuario.getAuthorities());
                     // 5. Autentica o usuário no contexto do Spring
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }

@@ -49,9 +49,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/exames/download/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/exames/**").permitAll()
+                        .requestMatchers("/api/ia/**").permitAll()
 
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .build();
     }
 
